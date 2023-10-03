@@ -20,10 +20,11 @@ $(function () {
   // current hour in 24-hour time?
   let divId = "hour-"; // Used to mark time block
   for (let i = 0; i <= TIME_BLOCKS_COUNT; i++) {
-    divId += (i + 9); // Calculate the id
+    let hour = (i + 9);
+    divId += hour; // Calculate the id
 
     var newBlock = $(`<div id=${divId} class="row time-block past"></div>`);
-    var blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3">9AM</div>`);
+    var blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3">${getAmPm(hour)}</div>`);
     var blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3"> </textarea>`);
     var blockSaveButton = $(`<button class="btn saveBtn col-2 col-md-1" aria-label="save"></button`);
     var saveButtonIcon = $(`<i class="fas fa-save" aria-hidden="true"></i>`);
@@ -65,3 +66,12 @@ $(function () {
   //   $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:MM:ss"));
   // }, 1000);
 });
+
+// Determine if hour should have AM or PM after it.
+function getAmPm(hour) {
+  if (hour <= 12) {
+    return hour + " AM";
+  } else {
+    return (hour - 12) + " PM";
+  }
+}
