@@ -106,7 +106,7 @@ $(function () {
   let calendar = createTimeBlocks();
   $("main").append(calendar)
 
-  $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:MM:ss"));
+  $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:mm:ss"));
 
   
   // Automatically update the page every new hour.
