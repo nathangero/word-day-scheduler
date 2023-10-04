@@ -3,25 +3,17 @@
 // in the html.
 const TIME_BLOCKS_COUNT = 8; // 8 hours/blocks
 const STORAGE_STRING_EVENTS = "userEvents";
+
 // Key = div id, value = textarea string
 var events = {}
 
 var today = dayjs();
-var calendar = $("#calendar");
+var currentHour = today.format("HH");
 
-$(function () {
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
-  
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
+
+function createTimeBlocks() {
+  var calendar = $('<div id="calendar" class="container-lg px-5">');
+
   let divId = "hour-"; // Used to mark time block
   for (let i = 0; i <= TIME_BLOCKS_COUNT; i++) {
     let hour = (i + 9);
@@ -30,9 +22,15 @@ $(function () {
     let timeStatus = determinePastPresentFuture(hour); // Past, Present, or Future
     let event = events[divId] ? events[divId] : ""; // Check if event exists, if not then give an empty string
 
-    let newBlock = $(`<div id=${divId} class="row time-block ${timeStatus}"></div>`);
-    let blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3">${hourAmPm}</div>`);
-    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3">${event}</textarea>`);
+    let newBlock = $(`<div id=${divId} class="row time-block"></div>`);
+    newBlock.addClass(timeStatus);
+
+    let blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3"></div>`);
+    blockTime.text(hourAmPm);
+
+    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3"></textarea>`);
+    blockTextArea.text(event)
+
     let blockSaveButton = $(`<button class="btn saveBtn col-2 col-md-1" aria-label="save"></button`);
     blockSaveButton.click(saveEvent); // Add click listener
 
@@ -45,26 +43,14 @@ $(function () {
     newBlock.append(blockTextArea);
     newBlock.append(blockSaveButton);
 
+    // Add the new block to the calendar
     calendar.append(newBlock);
     divId = "hour-"; // reset the id to default before the next iteration runs
   }
 
+  return calendar;
+}
 
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-
-
-  // TODO: Add code to display the current date in the header of the page.
-  $("#currentDay").text(today.format("dddd MMMM DD, YYYY"));
-
-
-  // Do bonus? Change seconds? Maybe change the colors of the blocks every new hour?
-  // setInterval(() => {
-  //   today = dayjs();
-  //   $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:MM:ss"));
-  // }, 1000);
-});
 
 // Determine if hour should have AM or PM after it.
 function getAmPm(hour) {
@@ -82,8 +68,8 @@ function getAmPm(hour) {
  * @returns Either the string "past", "present", or "future".
  */
 function determinePastPresentFuture(hour) {
-  let currentHour = today.format("HH");
-
+  console.log("@determinePastPresentFuture");
+  console.log(currentHour)
   if (hour == currentHour) {
     return "present";
   } else if (hour < currentHour) {
@@ -108,7 +94,7 @@ function saveEvent(event) {
   localStorage.setItem(STORAGE_STRING_EVENTS, JSON.stringify(events));
 }
 
-
+// Load user's saved events
 function loadEvents() {
   let locStorage = JSON.parse(localStorage.getItem(STORAGE_STRING_EVENTS));
   
@@ -118,4 +104,27 @@ function loadEvents() {
 }
 
 
+$(function () {
+  let calendar = createTimeBlocks();
+  $("main").append(calendar)
+
+  $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:MM:ss"));
+
+  
+  // Automatically update the page every new hour.
+  setInterval(() => {
+    let timerTime = dayjs();
+    let timerHour = timerTime.format("HH");
+
+    if (timerHour !== currentHour) {
+      currentHour = timerHour;
+      $("#calendar").remove(); // Remove old calendar
+      let calendar = createTimeBlocks();
+      $("main").append(calendar) // Add back new calendar
+    }
+    $("#currentDay").text(timerTime.format("dddd MMMM DD, YYYY HH:mm:ss"));
+  }, 1000);
+});
+
+// Get the events outside of the document.ready().
 loadEvents();
