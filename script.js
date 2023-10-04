@@ -118,7 +118,7 @@ $(function () {
       currentHour = timerHour;
       $("#calendar").remove(); // Remove old calendar
       let calendar = createTimeBlocks();
-      $("main").append(calendar) // Add back new calendar
+      $("main").append(calendar) // Add back new calendar with updated time blocks
     }
     $("#currentDay").text(timerTime.format("dddd MMMM DD, YYYY HH:mm:ss"));
   }, 1000);
