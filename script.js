@@ -28,11 +28,11 @@ $(function () {
     divId += hour; // Calculate the id
     let hourAmPm = getAmPm(hour);
     let timeStatus = determinePastPresentFuture(hour); // Past, Present, or Future
-
+    let event = events[divId] ? events[divId] : ""; // Check if event exists, if not then give an empty string
 
     let newBlock = $(`<div id=${divId} class="row time-block ${timeStatus}"></div>`);
     let blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3">${hourAmPm}</div>`);
-    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3"> </textarea>`);
+    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3">${event}</textarea>`);
     let blockSaveButton = $(`<button class="btn saveBtn col-2 col-md-1" aria-label="save"></button`);
     blockSaveButton.click(saveEvent); // Add click listener
 
@@ -98,15 +98,24 @@ function determinePastPresentFuture(hour) {
  * @param {Event} event 
  */
 function saveEvent(event) {
-  var button = $(event.target);
-  var buttonParent = button.parent(); // Get to the parent 
-  var textarea = buttonParent.find("textarea");
-  var text = textarea.val();
-  var parentId = buttonParent.attr("id"); // Get the id for localstorage
-
-  console.log(text);
-  console.log(parentId);
+  let button = $(event.target);
+  let buttonParent = button.parent(); // Get to the parent 
+  let textarea = buttonParent.find("textarea");
+  let text = textarea.val();
+  let parentId = buttonParent.attr("id"); // Get the id for localstorage
 
   events[parentId] = text;
   localStorage.setItem(STORAGE_STRING_EVENTS, JSON.stringify(events));
 }
+
+
+function loadEvents() {
+  let locStorage = JSON.parse(localStorage.getItem(STORAGE_STRING_EVENTS));
+  
+  if (locStorage) {
+    events = locStorage;
+  }
+}
+
+
+loadEvents();
