@@ -2,6 +2,10 @@
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
 const TIME_BLOCKS_COUNT = 8; // 8 hours/blocks
+const STORAGE_STRING_EVENTS = "userEvents";
+// Key = div id, value = textarea string
+var events = {}
+
 var today = dayjs();
 var calendar = $("#calendar");
 
@@ -24,12 +28,14 @@ $(function () {
     divId += hour; // Calculate the id
     let hourAmPm = getAmPm(hour);
     let timeStatus = determinePastPresentFuture(hour); // Past, Present, or Future
-
+    let event = events[divId] ? events[divId] : ""; // Check if event exists, if not then give an empty string
 
     let newBlock = $(`<div id=${divId} class="row time-block ${timeStatus}"></div>`);
     let blockTime = $(`<div class="col-2 col-md-1 hour text-center py-3">${hourAmPm}</div>`);
-    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3"> </textarea>`);
+    let blockTextArea = $(`<textarea class="col-8 col-md-10 description" rows="3">${event}</textarea>`);
     let blockSaveButton = $(`<button class="btn saveBtn col-2 col-md-1" aria-label="save"></button`);
+    blockSaveButton.click(saveEvent); // Add click listener
+
     let saveButtonIcon = $(`<i class="fas fa-save" aria-hidden="true"></i>`);
 
     blockSaveButton.append(saveButtonIcon); // Add the icon into the button
@@ -72,7 +78,7 @@ function getAmPm(hour) {
 /**
  * Compares if the hour is equal to the current time, earlier in the day or later in the day.
  * The return will determine what css class to give, which will determine what color the time block will be
- * @param {hour} hour The hour to compare to
+ * @param {Number} hour The hour to compare to
  * @returns Either the string "past", "present", or "future".
  */
 function determinePastPresentFuture(hour) {
@@ -86,3 +92,30 @@ function determinePastPresentFuture(hour) {
     return "future";
   }
 }
+
+/**
+ * click event listener to save the current event's text in localStorage
+ * @param {Event} event 
+ */
+function saveEvent(event) {
+  let button = $(event.target);
+  let buttonParent = button.parent(); // Get to the parent 
+  let textarea = buttonParent.find("textarea");
+  let text = textarea.val();
+  let parentId = buttonParent.attr("id"); // Get the id for localstorage
+
+  events[parentId] = text;
+  localStorage.setItem(STORAGE_STRING_EVENTS, JSON.stringify(events));
+}
+
+
+function loadEvents() {
+  let locStorage = JSON.parse(localStorage.getItem(STORAGE_STRING_EVENTS));
+  
+  if (locStorage) {
+    events = locStorage;
+  }
+}
+
+
+loadEvents();
