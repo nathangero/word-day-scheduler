@@ -1,7 +1,7 @@
 // Wrap all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
-const TIME_BLOCKS_COUNT = 10; // 8 hours/blocks
+const TIME_BLOCKS_COUNT = 8; // 8 hours/blocks
 const STORAGE_STRING_EVENTS = "userEvents";
 
 // Key = div id, value = textarea string
@@ -107,24 +107,23 @@ function loadEvents() {
 $(function () {
   let calendar = createTimeBlocks();
   $("main").append(calendar)
-  
 
   $("#currentDay").text(today.format("dddd MMMM DD, YYYY HH:MM:ss"));
 
   
-  // Do bonus? Change seconds? Maybe change the colors of the blocks every new hour?
-  // setInterval(() => {
-  //   let timerTime = dayjs();
-  //   let timerHour = timerTime.format("HH");
+  // Automatically update the page every new hour.
+  setInterval(() => {
+    let timerTime = dayjs();
+    let timerHour = timerTime.format("HH");
 
-  //   if (timerHour !== currentHour) {
-  //     currentHour = timerHour;
-  //     $("#calendar").remove(); // Remove old calendar
-  //     let calendar = createTimeBlocks();
-  //     $("main").append(calendar) // Add back new calendar
-  //   }
-  //   $("#currentDay").text(timerTime.format("dddd MMMM DD, YYYY HH:MM:ss"));
-  // }, 1000);
+    if (timerHour !== currentHour) {
+      currentHour = timerHour;
+      $("#calendar").remove(); // Remove old calendar
+      let calendar = createTimeBlocks();
+      $("main").append(calendar) // Add back new calendar
+    }
+    $("#currentDay").text(timerTime.format("dddd MMMM DD, YYYY HH:mm:ss"));
+  }, 1000);
 });
 
 // Get the events outside of the document.ready().
