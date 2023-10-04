@@ -68,8 +68,6 @@ function getAmPm(hour) {
  * @returns Either the string "past", "present", or "future".
  */
 function determinePastPresentFuture(hour) {
-  console.log("@determinePastPresentFuture");
-  console.log(currentHour)
   if (hour == currentHour) {
     return "present";
   } else if (hour < currentHour) {
