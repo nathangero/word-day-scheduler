@@ -89,6 +89,8 @@ setInterval(() => {
 
 ## Images
 
+<img src="./images/schedule-example.PNG" style="width: 700px; height: auto;" alt="Example of scheduler at 10am" />
+
 
 ## Credits
 
